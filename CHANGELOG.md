@@ -4,6 +4,34 @@ All notable changes to this module. Adheres to [Semantic Versioning](https://sem
 
 ---
 
+## [1.0.4] — 2026-07-03 — Security: portal-only licensing (removes forgeable key path)
+
+Closes a licensing bypass. Previous versions shipped the HMAC signing secret
+inside `LicenseValidator` (`SECRET_FRAGMENTS` / `BUNDLE_SECRET_FRAGMENTS`) and
+validated a locally-computed key against it, so anyone with the module source
+could compute a valid key for their own domain and run the module unlicensed.
+Secondary bypasses (a `production_environment=No` toggle and a client-settable
+`issued_key`/`issued_at`/`ip_blocked` grace) let the module activate from admin
+config alone.
+
+### Changed (security)
+
+- **Validation is now portal-only.** `isValid()` honours a key only when the
+  ETechFlow portal confirms it. The module ships no signing secret.
+- **Removed** `computeKey()`, `computeBundleKey()`, `checkKey()`,
+  `isLocallyIssuedKey()`, the `SECRET_FRAGMENTS` / `BUNDLE_SECRET_FRAGMENTS`
+  constants, and the config-driven `issued_key`/`ip_blocked` restore path.
+- **Offline grace is now un-forgeable.** It derives solely from a cached,
+  genuine portal "valid" response (48 h TTL), never from admin config. An
+  explicit portal reject clears it immediately.
+- **`production_environment` toggle removed** — production licensing is always
+  enforced. Bundle subscriptions continue via a portal-issued `SP-` bundle key.
+
+> Upgrade note: existing HMAC licences are no longer accepted — re-activate via
+> the portal to obtain an `SP-` key.
+
+---
+
 ## [1.0.3] — 2026-05-22 — Move admin menu under eTechFlow top-level sidebar
 
 ### Changed
