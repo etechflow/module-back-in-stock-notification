@@ -3,19 +3,24 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <!--
-            Render the "Notify me when back in stock" form in the product main
-            info column (right side). We use product.info.main NOT product.info.form
-            because Magento removes the add-to-cart form container entirely for
-            out-of-stock products - which is exactly when our form must appear.
+            Render the "Notify me when back in stock" form for out-of-stock products.
 
-            The block self-suppresses via canDisplay() when:
-              - BISN is disabled (license invalid OR admin toggle off), OR
-              - the product is in stock (no need to subscribe).
+            We place the form inside the "product.info.additional" container. That
+            container is rendered by product-info.phtml on Luma, on the stock Hyvä
+            theme, AND on custom Hyvä child themes (e.g. Keystation) - and, crucially,
+            it is rendered OUTSIDE the isSaleable() guard, so it still shows when the
+            add-to-cart form is removed for out-of-stock products.
+
+            "before=-" puts the form at the top of the additional section (just below
+            the main product info) rather than after the description tabs.
+
+            The block self-suppresses via canDisplay() when BISN is disabled (license
+            invalid OR admin toggle off) or the product is in stock.
         -->
-        <referenceContainer name="product.info.main">
+        <referenceContainer name="product.info.additional">
             <block class="ETechFlow\BackInStockNotification\Block\Product\NotifyMeForm"
                    name="etechflow.bisn.notify.form"
-                   after="product.info.stock.sku"
+                   before="-"
                    template="ETechFlow_BackInStockNotification::product/notify-me-form.phtml"
                    ifconfig="etechflow_bisn/general/enabled"/>
         </referenceContainer>

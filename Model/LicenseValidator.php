@@ -44,7 +44,7 @@ class LicenseValidator
     public const XML_PATH_BUNDLE_LICENSE_KEY = 'etechflow_bundle/license/license_key';
 
     // portal (browser-facing default, used by the admin controllers)
-    private const DEFAULT_PORTAL_URL = 'https://module.etechflow.com/license/validate';
+    private const DEFAULT_PORTAL_URL = 'https://license-service.etechflow.com/license/validate';
 
     private const MODULE_ID = 'back-in-stock-notification';
 
